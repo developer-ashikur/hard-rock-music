@@ -1,25 +1,24 @@
 const songName = document.getElementById('song-name');
 const displayResult = document.getElementById('display-songs');
-const displayError = document.getElementById('error');
+const showError = document.getElementById('error');
 const displayLyrics = document.getElementById('lyrics');
 
 const getSongs = async () => {
     displayLyrics.innerHTML = '';
-    // displayError.style.display = 'none';
+    showError.innerText = '';
     try{
         const res = await fetch(`https://api.lyrics.ovh/suggest/${songName.value}`);
         const data = await res.json();
         displaySongs(data.data);
     }
-    catch{
-        // displayError.style.display = 'block';
+    catch (error) {
+        displayError(`Sorry!! Something went wrong. Please try again later.`);
     }
 }
 
 const displaySongs = songs => {
     displayResult.innerHTML = '';
     songs.forEach(song => {
-        console.log(song);
         const songDiv = document.createElement('div');
         songDiv.className = 'single-result row align-items-center my-3 p-3';
         const songDetails = `
@@ -37,17 +36,25 @@ const displaySongs = songs => {
     });
 }
 
-
-
 const getLyrics = async (artist, title) => {
     displayLyrics.innerHTML = '';
-    const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${title}`);
-    const data = await res.json();
-    showLyrics(data.lyrics);
+    try{
+        const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${title}`);
+        const data = await res.json();
+        showLyrics(data.lyrics);
+    }
+    catch (error) {
+        displayError(`Something went wrong! Please try again later.`);
+    }
+    
 }
 
 const showLyrics = lyrics => {
     const lyricP = document.createElement('p');
     lyricP.innerText = lyrics;
     displayLyrics.appendChild(lyricP);
+}
+
+const displayError = error =>{
+    showError.innerText = error;
 }
